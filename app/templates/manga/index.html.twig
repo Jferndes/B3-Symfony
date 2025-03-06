@@ -4,7 +4,9 @@
 
 {% block body %}
     <h1>Manga index</h1>
-
+    <div class='mb-4 text-end'>
+        <a class='btn btn-info text-white' href="{{ path('app_manga_new') }}">Create new</a>
+    </div>
     <table class="table">
         <thead>
             <tr>
@@ -37,5 +39,4 @@
         </tbody>
     </table>
 
-    <a href="{{ path('app_manga_new') }}">Create new</a>
 {% endblock %}

@@ -12,6 +12,18 @@
         {% endblock %}
     </head>
     <body>
-        {% block body %}{% endblock %}
+        {{ include('_nav.html.twig') }}
+
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="flash-{{ label }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        <div class='container'>
+            {% block body %}{% endblock %}
+        </div>
     </body>
 </html>
