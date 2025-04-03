@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\MangaRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: MangaRepository::class)]
@@ -29,6 +31,17 @@ class Manga
     #[ORM\ManyToOne(inversedBy: 'mangas')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Category $category = null;
+
+    /**
+     * @var Collection<int, Tags>
+     */
+    #[ORM\ManyToMany(targetEntity: Tags::class, mappedBy: 'mangas')]
+    private Collection $tags;
+
+    public function __construct()
+    {
+        $this->tags = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -100,6 +113,33 @@ class Manga
     public function setCategory(?Category $category): static
     {
         $this->category = $category;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Tags>
+     */
+    public function getTags(): Collection
+    {
+        return $this->tags;
+    }
+
+    public function addTag(Tags $tag): static
+    {
+        if (!$this->tags->contains($tag)) {
+            $this->tags->add($tag);
+            $tag->addManga($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTag(Tags $tag): static
+    {
+        if ($this->tags->removeElement($tag)) {
+            $tag->removeManga($this);
+        }
 
         return $this;
     }
