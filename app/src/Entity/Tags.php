@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TagsRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Tags
 {
     #[ORM\Id]
@@ -41,7 +42,8 @@ class Tags
 
     public function setName(string $name): static
     {
-        $this->name = $name;
+        // Convertir le nom en minuscules avant de le stocker
+        $this->name = strtolower($name);
 
         return $this;
     }

@@ -13,8 +13,9 @@
                 <th>Id</th>
                 <th>Title</th>
                 <th>Price</th>
+                <th>Category</th>
+                <th>Tags</th>
                 <th>CreatedAt</th>
-                <th>UpdatedAt</th>
                 <th>actions</th>
             </tr>
         </thead>
@@ -24,16 +25,25 @@
                 <td>{{ manga.id }}</td>
                 <td>{{ manga.title }}</td>
                 <td>{{ manga.price }}</td>
-                <td>{{ manga.createdAt ? manga.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ manga.updatedAt ? manga.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ manga.category.label }}</td>
                 <td>
-                    <a href="{{ path('app_manga_show', {'id': manga.id}) }}">show</a>
-                    <a href="{{ path('app_manga_edit', {'id': manga.id}) }}">edit</a>
+                    {% if manga.tags|length > 0 %}
+                        {% for tag in manga.tags %}
+                            <span class="badge bg-secondary">{{ tag.name|capitalize }}</span>
+                        {% endfor %}
+                    {% else %}
+                        <em>-</em>
+                    {% endif %}
+                </td>
+                <td>{{ manga.createdAt ? manga.createdAt|date('Y-m-d') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_manga_show', {'id': manga.id}) }}" class="btn btn-sm btn-info text-white">show</a>
+                    <a href="{{ path('app_manga_edit', {'id': manga.id}) }}" class="btn btn-sm btn-primary">edit</a>
                 </td>
             </tr>
         {% else %}
             <tr>
-                <td colspan="6">no records found</td>
+                <td colspan="7">no records found</td>
             </tr>
         {% endfor %}
         </tbody>

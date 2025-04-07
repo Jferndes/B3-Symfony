@@ -2,12 +2,18 @@
 
 {% block title %}Edit Manga{% endblock %}
 
+{% block javascripts %}
+    {{ parent() }}
+    {{ importmap('tags-selector') }}
+{% endblock %}
+
 {% block body %}
     <h1>Edit Manga</h1>
 
     {{ include('manga/_form.html.twig', {'button_label': 'Update'}) }}
 
-    <a href="{{ path('app_manga_index') }}">back to list</a>
-
-    {{ include('manga/_delete_form.html.twig') }}
+    <div class="d-flex mt-3">
+        <a href="{{ path('app_manga_index') }}" class="btn btn-secondary me-2">back to list</a>
+        {{ include('manga/_delete_form.html.twig') }}
+    </div>
 {% endblock %}

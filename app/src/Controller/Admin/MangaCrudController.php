@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\Category;
 use App\Entity\Manga;
+use App\Entity\Tags;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
@@ -28,7 +29,17 @@ class MangaCrudController extends AbstractCrudController
             IdField::new('id')->hideOnForm(),
             TextField::new('title'),
             MoneyField::new('price')->setCurrency('EUR'),
-            AssociationField::new('category')->setCrudController(CategoryCrudController::class),
+            AssociationField::new('category')
+                ->setCrudController(CategoryCrudController::class),
+            AssociationField::new('tags')
+                ->setFormTypeOption('by_reference', false)
+                ->setCrudController(TagsCrudController::class)
+                ->setFormTypeOptions([
+                    'multiple' => true,
+                    'choice_label' => function(Tags $tag) {
+                        return ucfirst($tag->getName());
+                    }
+                ]),
             DateTimeField::new('createdAt')->hideOnForm(),
             DateTimeField::new('updatedAt')->hideOnForm(),
         ];
