@@ -1,30 +1,40 @@
-{{ form_start(form) }}
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            {{ form_label(form.title) }}
-            {{ form_widget(form.title, {'attr': {'class': 'form-control'}}) }}
-            {{ form_errors(form.title) }}
+{{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+    <div class="row g-3">
+        <div class="col-md-8 mb-3">
+            {{ form_label(form.title, 'Titre', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.title, {'attr': {'class': 'form-control', 'placeholder': 'Entrez le titre du manga'}}) }}
+            {{ form_errors(form.title, {'attr': {'class': 'invalid-feedback'}}) }}
+            <div class="form-text">Le titre doit être unique et descriptif.</div>
         </div>
-        <div class="col-md-6 mb-3">
-            {{ form_label(form.price) }}
-            {{ form_widget(form.price, {'attr': {'class': 'form-control'}}) }}
-            {{ form_errors(form.price) }}
-        </div>
-    </div>
-    
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            {{ form_label(form.category) }}
-            {{ form_widget(form.category, {'attr': {'class': 'form-control'}}) }}
-            {{ form_errors(form.category) }}
-        </div>
-        <div class="col-md-6 mb-3">
-            {{ form_label(form.tags) }}
-            {{ form_widget(form.tags, {'attr': {'class': 'form-control select-tags'}}) }}
-            {{ form_errors(form.tags) }}
-            <small class="form-text text-muted">Sélectionnez un ou plusieurs tags</small>
+        
+        <div class="col-md-4 mb-3">
+            {{ form_label(form.price, 'Prix (€)', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.price, {'attr': {'class': 'form-control', 'placeholder': 'Ex: 9.99'}}) }}
+            {{ form_errors(form.price, {'attr': {'class': 'invalid-feedback'}}) }}
         </div>
     </div>
     
-    <button class="btn btn-primary">{{ button_label|default('Save') }}</button>
+    <div class="row g-3">
+        <div class="col-md-6 mb-3">
+            {{ form_label(form.category, 'Catégorie', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.category, {'attr': {'class': 'form-select'}}) }}
+            {{ form_errors(form.category, {'attr': {'class': 'invalid-feedback'}}) }}
+        </div>
+        
+        <div class="col-md-6 mb-3">
+            {{ form_label(form.tags, 'Tags', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.tags, {'attr': {
+                'class': 'form-select select-tags',
+                'data-placeholder': 'Sélectionnez un ou plusieurs tags'
+            }}) }}
+            {{ form_errors(form.tags, {'attr': {'class': 'invalid-feedback'}}) }}
+            <div class="form-text">Sélectionnez un ou plusieurs tags pour catégoriser le manga.</div>
+        </div>
+    </div>
+    
+    <div class="d-grid gap-2 mt-4">
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save me-1"></i> {{ button_label|default('Enregistrer') }}
+        </button>
+    </div>
 {{ form_end(form) }}

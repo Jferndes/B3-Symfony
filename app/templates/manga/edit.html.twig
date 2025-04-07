@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Manga{% endblock %}
+{% block title %}Modifier un Manga{% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
@@ -8,12 +8,55 @@
 {% endblock %}
 
 {% block body %}
-    <h1>Edit Manga</h1>
-
-    {{ include('manga/_form.html.twig', {'button_label': 'Update'}) }}
-
-    <div class="d-flex mt-3">
-        <a href="{{ path('app_manga_index') }}" class="btn btn-secondary me-2">back to list</a>
-        {{ include('manga/_delete_form.html.twig') }}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ path('app_manga_index') }}">Bibliothèque</a></li>
+                    <li class="breadcrumb-item"><a href="{{ path('app_manga_show', {'id': manga.id}) }}">{{ manga.title }}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Modifier</li>
+                </ol>
+            </nav>
+            
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h1 class="h3 mb-0">Modifier "{{ manga.title }}"</h1>
+                </div>
+                <div class="card-body">
+                    {{ include('manga/_form.html.twig', {'button_label': 'Enregistrer les modifications'}) }}
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{{ path('app_manga_show', {'id': manga.id}) }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i> Retour aux détails
+                        </a>
+                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                            <i class="fas fa-trash-alt me-1"></i> Supprimer
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
+
+<!-- Modal de confirmation de suppression -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">Confirmer la suppression</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Êtes-vous sûr de vouloir supprimer le manga <strong>{{ manga.title }}</strong> ?</p>
+                <p class="text-danger"><small>Cette action est irréversible.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                {{ include('manga/_delete_form.html.twig', {'button_class': 'btn btn-danger'}) }}
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

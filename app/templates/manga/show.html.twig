@@ -1,56 +1,98 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Manga{% endblock %}
+{% block title %}Détails du Manga{% endblock %}
 
 {% block body %}
-    <h1>Manga</h1>
-
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ manga.id }}</td>
-            </tr>
-            <tr>
-                <th>Title</th>
-                <td>{{ manga.title }}</td>
-            </tr>
-            <tr>
-                <th>Price</th>
-                <td>{{ manga.price }}</td>
-            </tr>
-            <tr>
-                <th>Category</th>
-                <td>{{ manga.category.label }}</td>
-            </tr>
-            <tr>
-                <th>Tags</th>
-                <td>
-                    {% if manga.tags|length > 0 %}
-                        <ul class="list-inline">
-                            {% for tag in manga.tags %}
-                                <li class="list-inline-item badge bg-secondary">{{ tag.name|capitalize }}</li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <em>Aucun tag</em>
-                    {% endif %}
-                </td>
-            </tr>
-            <tr>
-                <th>CreatedAt</th>
-                <td>{{ manga.createdAt ? manga.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>UpdatedAt</th>
-                <td>{{ manga.updatedAt ? manga.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <div class="d-flex">
-        <a href="{{ path('app_manga_index') }}" class="btn btn-secondary me-2">back to list</a>
-        <a href="{{ path('app_manga_edit', {'id': manga.id}) }}" class="btn btn-primary me-2">edit</a>
-        {{ include('manga/_delete_form.html.twig') }}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ path('app_manga_index') }}">Bibliothèque</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ manga.title }}</li>
+                </ol>
+            </nav>
+            
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h1 class="h3 mb-0">{{ manga.title }}</h1>
+                    <span class="badge bg-light text-dark fs-5">{{ manga.price|number_format(2, ',', ' ') }} €</span>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5 class="text-muted">Informations générales</h5>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>ID:</span>
+                                    <span class="fw-bold">{{ manga.id }}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Catégorie:</span>
+                                    <span class="badge bg-info text-dark">{{ manga.category.label }}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Date d'ajout:</span>
+                                    <span>{{ manga.createdAt ? manga.createdAt|date('d/m/Y à H:i') : '' }}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Dernière modification:</span>
+                                    <span>{{ manga.updatedAt ? manga.updatedAt|date('d/m/Y à H:i') : '' }}</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="text-muted">Tags</h5>
+                            {% if manga.tags|length > 0 %}
+                                <div class="p-3 border rounded">
+                                    {% for tag in manga.tags %}
+                                        <span class="badge bg-secondary mb-1 me-1 p-2">{{ tag.name|capitalize }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="alert alert-light text-center">
+                                    <span class="text-muted fst-italic">Aucun tag associé</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ path('app_manga_index') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i> Retour à la liste
+                        </a>
+                        <div class="btn-group">
+                            <a href="{{ path('app_manga_edit', {'id': manga.id}) }}" class="btn btn-primary">
+                                <i class="fas fa-edit me-1"></i> Modifier
+                            </a>
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                <i class="fas fa-trash-alt me-1"></i> Supprimer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
+
+<!-- Modal de confirmation de suppression -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">Confirmer la suppression</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Êtes-vous sûr de vouloir supprimer le manga <strong>{{ manga.title }}</strong> ?</p>
+                <p class="text-danger"><small>Cette action est irréversible.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                {{ include('manga/_delete_form.html.twig', {'button_class': 'btn btn-danger'}) }}
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

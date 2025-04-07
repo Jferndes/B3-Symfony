@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Manga{% endblock %}
+{% block title %}Ajouter un nouveau Manga{% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
@@ -8,9 +8,49 @@
 {% endblock %}
 
 {% block body %}
-    <h1>Create new Manga</h1>
-
-    {{ include('manga/_form.html.twig') }}
-
-    <a href="{{ path('app_manga_index') }}" class="btn btn-secondary mt-3">back to list</a>
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ path('app_manga_index') }}">Bibliothèque</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Ajouter un manga</li>
+                </ol>
+            </nav>
+            
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h1 class="h3 mb-0">Ajouter un nouveau manga</h1>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-4">Complétez le formulaire ci-dessous pour ajouter un nouveau manga à la bibliothèque.</p>
+                    
+                    {{ include('manga/_form.html.twig', {'button_label': 'Enregistrer le manga'}) }}
+                    
+                    <div class="mt-4">
+                        <a href="{{ path('app_manga_index') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i> Retour à la liste
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-4 shadow-sm border-info">
+                <div class="card-header bg-info text-white">
+                    <h2 class="h5 mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Conseils pour l'ajout d'un manga
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li>Assurez-vous que le titre est correct et unique.</li>
+                        <li>Le prix doit être indiqué en euros (par exemple : 9.99).</li>
+                        <li>Sélectionnez la catégorie qui correspond le mieux au manga.</li>
+                        <li>Vous pouvez ajouter plusieurs tags pour faciliter les recherches ultérieures.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

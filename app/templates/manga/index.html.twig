@@ -1,52 +1,112 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Manga index{% endblock %}
+{% block title %}Bibliothèque de Mangas{% endblock %}
 
 {% block body %}
-    <h1>Manga index</h1>
-    <div class='mb-4 text-end'>
-        <a class='btn btn-info text-white' href="{{ path('app_manga_new') }}">Create new</a>
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2 mb-0">Bibliothèque de Mangas</h1>
+        <a class="btn btn-primary" href="{{ path('app_manga_new') }}">
+            <i class="fas fa-plus-circle me-1"></i> Ajouter un manga
+        </a>
     </div>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Title</th>
-                <th>Price</th>
-                <th>Category</th>
-                <th>Tags</th>
-                <th>CreatedAt</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for manga in mangas %}
-            <tr>
-                <td>{{ manga.id }}</td>
-                <td>{{ manga.title }}</td>
-                <td>{{ manga.price }}</td>
-                <td>{{ manga.category.label }}</td>
-                <td>
-                    {% if manga.tags|length > 0 %}
-                        {% for tag in manga.tags %}
-                            <span class="badge bg-secondary">{{ tag.name|capitalize }}</span>
-                        {% endfor %}
-                    {% else %}
-                        <em>-</em>
-                    {% endif %}
-                </td>
-                <td>{{ manga.createdAt ? manga.createdAt|date('Y-m-d') : '' }}</td>
-                <td>
-                    <a href="{{ path('app_manga_show', {'id': manga.id}) }}" class="btn btn-sm btn-info text-white">show</a>
-                    <a href="{{ path('app_manga_edit', {'id': manga.id}) }}" class="btn btn-sm btn-primary">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="7">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
 
+    <!-- Formulaire de recherche et filtres -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" action="{{ path('app_manga_index') }}" class="row g-3">
+                <div class="col-md-5">
+                    <label for="search" class="form-label">Rechercher un manga</label>
+                    <input type="text" id="search" name="search" class="form-control" placeholder="Entrez un titre..." value="{{ app.request.query.get('search') }}">
+                </div>
+                
+                <div class="col-md-4">
+                    <label for="category" class="form-label">Filtrer par catégorie</label>
+                    <select id="category" name="category" class="form-select">
+                        <option value="">Toutes les catégories</option>
+                        {% for category in categories %}
+                            <option value="{{ category.id }}" {% if app.request.query.get('category') == category.id %}selected{% endif %}>
+                                {{ category.label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="col-md-3 d-flex align-items-end">
+                    <div class="d-grid gap-2 w-100">
+                        <button type="submit" class="btn btn-info text-white">
+                            <i class="fas fa-search me-1"></i> Rechercher
+                        </button>
+                        {% if app.request.query.get('search') or app.request.query.get('category') %}
+                            <a href="{{ path('app_manga_index') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-1"></i> Réinitialiser
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% if mangas|length > 0 %}
+        <div class="card shadow-sm">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Titre</th>
+                            <th>Prix</th>
+                            <th>Catégorie</th>
+                            <th>Tags</th>
+                            <th>Date d'ajout</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for manga in mangas %}
+                        <tr>
+                            <td>{{ manga.id }}</td>
+                            <td class="fw-bold">{{ manga.title }}</td>
+                            <td>{{ manga.price|number_format(2, ',', ' ') }} €</td>
+                            <td>
+                                <span class="badge bg-info text-dark">{{ manga.category.label }}</span>
+                            </td>
+                            <td>
+                                {% if manga.tags|length > 0 %}
+                                    {% for tag in manga.tags %}
+                                        <span class="badge bg-secondary">{{ tag.name|capitalize }}</span>
+                                    {% endfor %}
+                                {% else %}
+                                    <span class="text-muted fst-italic">Aucun tag</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ manga.createdAt ? manga.createdAt|date('d/m/Y') : '' }}</td>
+                            <td>
+                                <div class="d-flex justify-content-center">
+                                    <a href="{{ path('app_manga_show', {'id': manga.id}) }}" class="btn btn-info text-white me-2" title="Voir les détails">
+                                        <i class="fas fa-eye fa-lg"></i>
+                                    </a>
+                                    <a href="{{ path('app_manga_edit', {'id': manga.id}) }}" class="btn btn-primary" title="Modifier">
+                                        <i class="fas fa-edit fa-lg"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            {% if app.request.query.get('search') or app.request.query.get('category') %}
+                <i class="fas fa-info-circle me-2"></i> Aucun manga ne correspond à vos critères de recherche. 
+                <a href="{{ path('app_manga_index') }}" class="alert-link">Afficher tous les mangas</a>.
+            {% else %}
+                <i class="fas fa-info-circle me-2"></i> Aucun manga n'a été ajouté. Commencez par <a href="{{ path('app_manga_new') }}" class="alert-link">créer un nouveau manga</a>.
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
 {% endblock %}

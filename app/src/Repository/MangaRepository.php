@@ -16,28 +16,38 @@ class MangaRepository extends ServiceEntityRepository
         parent::__construct($registry, Manga::class);
     }
 
-    //    /**
-    //     * @return Manga[] Returns an array of Manga objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('m')
-    //            ->andWhere('m.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('m.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /**
+     * Recherche des mangas par titre
+     * 
+     * @param string $search Terme de recherche
+     * @return Manga[] Returns an array of Manga objects
+     */
+    public function findByTitleSearch(string $search): array
+    {
+        return $this->createQueryBuilder('m')
+            ->andWhere('m.title LIKE :search')
+            ->setParameter('search', '%' . $search . '%')
+            ->orderBy('m.title', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 
-    //    public function findOneBySomeField($value): ?Manga
-    //    {
-    //        return $this->createQueryBuilder('m')
-    //            ->andWhere('m.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    /**
+     * Recherche des mangas par titre et catégorie
+     * 
+     * @param string $search Terme de recherche
+     * @param int $categoryId ID de la catégorie
+     * @return Manga[] Returns an array of Manga objects
+     */
+    public function findByTitleAndCategory(string $search, int $categoryId): array
+    {
+        return $this->createQueryBuilder('m')
+            ->andWhere('m.title LIKE :search')
+            ->andWhere('m.category = :categoryId')
+            ->setParameter('search', '%' . $search . '%')
+            ->setParameter('categoryId', $categoryId)
+            ->orderBy('m.title', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }
