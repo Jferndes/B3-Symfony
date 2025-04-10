@@ -15,7 +15,7 @@
     <div class="card shadow-sm mb-4">
         <div class="card-body">
             <form method="get" action="{{ path('app_manga_index') }}" class="row g-3">
-                <div class="col-md-5">
+                <div class="col-md-4">
                     <label for="search" class="form-label">Rechercher un manga</label>
                     <input type="text" id="search" name="search" class="form-control" placeholder="Entrez un titre..." value="{{ app.request.query.get('search') }}">
                 </div>
@@ -31,18 +31,27 @@
                         {% endfor %}
                     </select>
                 </div>
+
+                <div class="col-md-4">
+                    <label for="tags" class="form-label">Filtrer par tags</label>
+                    <select id="tags" name="tags[]" class="form-select select-tags" multiple>
+                        {% for tag in tags %}
+                            <option value="{{ tag.id }}" {% if tag.id in app.request.query.all('tags') %}selected{% endif %}>
+                                {{ tag.name|capitalize }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
                 
-                <div class="col-md-3 d-flex align-items-end">
-                    <div class="d-grid gap-2 w-100">
-                        <button type="submit" class="btn btn-info text-white">
-                            <i class="fas fa-search me-1"></i> Rechercher
-                        </button>
-                        {% if app.request.query.get('search') or app.request.query.get('category') %}
-                            <a href="{{ path('app_manga_index') }}" class="btn btn-outline-secondary">
-                                <i class="fas fa-times me-1"></i> Réinitialiser
-                            </a>
-                        {% endif %}
-                    </div>
+                <div class="col-12 d-flex justify-content-end">
+                    <button type="submit" class="btn btn-info text-white me-2">
+                        <i class="fas fa-search me-1"></i> Rechercher
+                    </button>
+                    {% if app.request.query.get('search') or app.request.query.get('category') or app.request.query.all('tags') %}
+                        <a href="{{ path('app_manga_index') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-1"></i> Réinitialiser
+                        </a>
+                    {% endif %}
                 </div>
             </form>
         </div>
@@ -100,7 +109,7 @@
         </div>
     {% else %}
         <div class="alert alert-info">
-            {% if app.request.query.get('search') or app.request.query.get('category') %}
+            {% if app.request.query.get('search') or app.request.query.get('category') or app.request.query.all('tags') %}
                 <i class="fas fa-info-circle me-2"></i> Aucun manga ne correspond à vos critères de recherche. 
                 <a href="{{ path('app_manga_index') }}" class="alert-link">Afficher tous les mangas</a>.
             {% else %}
@@ -109,4 +118,9 @@
         </div>
     {% endif %}
 </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ importmap('tags-selector') }}
 {% endblock %}

@@ -6,6 +6,7 @@ use App\Entity\Manga;
 use App\Form\MangaType;
 use App\Repository\MangaRepository;
 use App\Repository\CategoryRepository;
+use App\Repository\TagsRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,32 +14,39 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-
-
-
 #[Route('/manga')]
 #[IsGranted('ROLE_USER')]
 final class MangaController extends AbstractController
 {
     #[Route(name: 'app_manga_index', methods: ['GET'])]
-    public function index(Request $request, MangaRepository $mangaRepository, CategoryRepository $categoryRepository): Response
+    public function index(
+        Request $request,
+        MangaRepository $mangaRepository,
+        CategoryRepository $categoryRepository,
+        TagsRepository $tagsRepository
+    ): Response
     {
         $search = $request->query->get('search');
         $categoryId = $request->query->get('category');
+        $tagIds = $request->query->all('tags');
         
         // Récupération des mangas selon les filtres
-        if (!$search && !$categoryId) {
+        if (!$search && !$categoryId && empty($tagIds)) {
             $mangas = $mangaRepository->findAll();
         } else {
-            $mangas = $mangaRepository->findByFilter($search, (int) $categoryId);
+            $mangas = $mangaRepository->findByFilter($search, (int) $categoryId, $tagIds);
         }
         
         // Récupération de toutes les catégories pour le filtre
         $categories = $categoryRepository->findAll();
         
+        // Récupération de tous les tags pour le filtre
+        $tags = $tagsRepository->findAll();
+        
         return $this->render('manga/index.html.twig', [
             'mangas' => $mangas,
             'categories' => $categories,
+            'tags' => $tags,
         ]);
     }
 
