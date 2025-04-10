@@ -17,37 +17,27 @@ class MangaRepository extends ServiceEntityRepository
     }
 
     /**
-     * Recherche des mangas par titre
-     * 
-     * @param string $search Terme de recherche
-     * @return Manga[] Returns an array of Manga objects
-     */
-    public function findByTitleSearch(string $search): array
-    {
-        return $this->createQueryBuilder('m')
-            ->andWhere('m.title LIKE :search')
-            ->setParameter('search', '%' . $search . '%')
-            ->orderBy('m.title', 'ASC')
-            ->getQuery()
-            ->getResult();
-    }
-
-    /**
      * Recherche des mangas par titre et catégorie
      * 
-     * @param string $search Terme de recherche
+     * @param string $search Texte recherché
      * @param int $categoryId ID de la catégorie
-     * @return Manga[] Returns an array of Manga objects
+     * @return Manga[] Returns liste de mangas
      */
-    public function findByTitleAndCategory(string $search, int $categoryId): array
+    public function findByFilter(string $search, int $categoryId): array
     {
-        return $this->createQueryBuilder('m')
-            ->andWhere('m.title LIKE :search')
-            ->andWhere('m.category = :categoryId')
-            ->setParameter('search', '%' . $search . '%')
-            ->setParameter('categoryId', $categoryId)
-            ->orderBy('m.title', 'ASC')
-            ->getQuery()
-            ->getResult();
+        $qb = $this->createQueryBuilder('m')
+            ->orderBy('m.title', 'ASC');
+        
+        if($search){
+            $qb->andWhere('m.title LIKE :search')
+            ->setParameter('search', '%' . $search . '%');
+        }
+        if($categoryId){
+            $qb->andWhere('m.category = :categoryId')
+            ->setParameter('categoryId', $categoryId);
+        }   
+            
+        $query = $qb->getQuery();
+        return $query->execute();
     }
 }

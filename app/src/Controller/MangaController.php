@@ -27,14 +27,10 @@ final class MangaController extends AbstractController
         $categoryId = $request->query->get('category');
         
         // Récupération des mangas selon les filtres
-        if ($search && $categoryId) {
-            $mangas = $mangaRepository->findByTitleAndCategory($search, $categoryId);
-        } elseif ($search) {
-            $mangas = $mangaRepository->findByTitleSearch($search);
-        } elseif ($categoryId) {
-            $mangas = $mangaRepository->findBy(['category' => $categoryId]);
-        } else {
+        if (!$search && !$categoryId) {
             $mangas = $mangaRepository->findAll();
+        } else {
+            $mangas = $mangaRepository->findByFilter($search, (int) $categoryId);
         }
         
         // Récupération de toutes les catégories pour le filtre
