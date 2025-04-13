@@ -2,6 +2,11 @@
 
 {% block title %}Bibliothèque de Mangas{% endblock %}
 
+{% block javascripts %}
+    {{ parent() }}
+    {{ importmap('select2-init') }}
+{% endblock %}
+
 {% block body %}
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -14,13 +19,17 @@
     <!-- Formulaire de recherche et filtres -->
     <div class="card shadow-sm mb-4">
         <div class="card-body">
-            <form method="get" action="{{ path('app_manga_index') }}" class="row g-3">
-                <div class="col-md-4">
+            <form method="get" action="{{ path('app_manga_index') }}" class="row g-3 manga-filter-form">
+                <div class="col-md-6">
                     <label for="search" class="form-label">Rechercher un manga</label>
-                    <input type="text" id="search" name="search" class="form-control" placeholder="Entrez un titre..." value="{{ app.request.query.get('search') }}">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        <input type="text" id="search" name="search" class="form-control" 
+                               placeholder="Titre du manga..." value="{{ app.request.query.get('search') }}">
+                    </div>
                 </div>
                 
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <label for="category" class="form-label">Filtrer par catégorie</label>
                     <select id="category" name="category" class="form-select">
                         <option value="">Toutes les catégories</option>
@@ -32,7 +41,7 @@
                     </select>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-12 mt-2">
                     <label for="tags" class="form-label">Filtrer par tags</label>
                     <select id="tags" name="tags[]" class="form-select select-tags" multiple>
                         {% for tag in tags %}
@@ -43,7 +52,7 @@
                     </select>
                 </div>
                 
-                <div class="col-12 d-flex justify-content-end">
+                <div class="col-12 d-flex justify-content-end mt-4">
                     <button type="submit" class="btn btn-info text-white me-2">
                         <i class="fas fa-search me-1"></i> Rechercher
                     </button>
@@ -57,13 +66,52 @@
         </div>
     </div>
 
+    <!-- Affichage des filtres actifs -->
+    {% set activeFilters = [] %}
+    {% if app.request.query.get('search') %}
+        {% set activeFilters = activeFilters|merge(['Recherche: "' ~ app.request.query.get('search') ~ '"']) %}
+    {% endif %}
+    {% if app.request.query.get('category') %}
+        {% for category in categories %}
+            {% if category.id == app.request.query.get('category') %}
+                {% set activeFilters = activeFilters|merge(['Catégorie: ' ~ category.label]) %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    {% if app.request.query.all('tags')|length > 0 %}
+        {% set tagNames = [] %}
+        {% for tagId in app.request.query.all('tags') %}
+            {% for tag in tags %}
+                {% if tag.id == tagId %}
+                    {% set tagNames = tagNames|merge([tag.name|capitalize]) %}
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+        {% if tagNames|length > 0 %}
+            {% set activeFilters = activeFilters|merge(['Tags: ' ~ tagNames|join(', ')]) %}
+        {% endif %}
+    {% endif %}
+
+    {% if activeFilters|length > 0 %}
+    <div class="alert alert-info mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <i class="fas fa-filter me-2"></i> <strong>Filtres actifs:</strong> 
+                {{ activeFilters|join(' | ') }}
+            </div>
+            <a href="{{ path('app_manga_index') }}" class="btn btn-sm btn-outline-info">
+                <i class="fas fa-times me-1"></i> Effacer tous les filtres
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
     {% if mangas|length > 0 %}
         <div class="card shadow-sm">
             <div class="table-responsive">
                 <table class="table table-hover table-striped mb-0">
                     <thead class="table-dark">
                         <tr>
-                            <th>ID</th>
                             <th>Titre</th>
                             <th>Prix</th>
                             <th>Catégorie</th>
@@ -75,7 +123,6 @@
                     <tbody>
                     {% for manga in mangas %}
                         <tr>
-                            <td>{{ manga.id }}</td>
                             <td class="fw-bold">{{ manga.title }}</td>
                             <td>{{ manga.price|number_format(2, ',', ' ') }} €</td>
                             <td>
@@ -106,6 +153,11 @@
                     </tbody>
                 </table>
             </div>
+            
+            <!-- Pagination -->
+            <div class="card-footer">
+                {{ include('_pagination.html.twig') }}
+            </div>
         </div>
     {% else %}
         <div class="alert alert-info">
@@ -118,9 +170,4 @@
         </div>
     {% endif %}
 </div>
-{% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
-    {{ importmap('tags-selector') }}
 {% endblock %}

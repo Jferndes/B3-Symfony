@@ -1,0 +1,63 @@
+{# templates/_pagination.html.twig #}
+{% if pagination.total_pages > 1 %}
+<nav aria-label="Navigation des pages">
+    <ul class="pagination justify-content-center">
+        {# Lien vers la première page #}
+        <li class="page-item {{ pagination.current_page == 1 ? 'disabled' : '' }}">
+            <a class="page-link" href="{{ path(pagination.route, pagination.route_params|merge({'page': 1})) }}" aria-label="Première page">
+                <span aria-hidden="true">&laquo;&laquo;</span>
+            </a>
+        </li>
+        
+        {# Lien vers la page précédente #}
+        <li class="page-item {{ pagination.current_page == 1 ? 'disabled' : '' }}">
+            <a class="page-link" href="{{ path(pagination.route, pagination.route_params|merge({'page': pagination.current_page - 1})) }}" aria-label="Page précédente">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        
+        {# Pages autour de la page courante #}
+        {% set start = max(1, pagination.current_page - 2) %}
+        {% set end = min(pagination.total_pages, pagination.current_page + 2) %}
+        
+        {# Ajuster si on est au début ou à la fin #}
+        {% if start == 1 %}
+            {% set end = min(5, pagination.total_pages) %}
+        {% endif %}
+        
+        {% if end == pagination.total_pages %}
+            {% set start = max(1, pagination.total_pages - 4) %}
+        {% endif %}
+        
+        {# Afficher les numéros de page #}
+        {% for i in start..end %}
+            <li class="page-item {{ pagination.current_page == i ? 'active' : '' }}">
+                <a class="page-link" href="{{ path(pagination.route, pagination.route_params|merge({'page': i})) }}">{{ i }}</a>
+            </li>
+        {% endfor %}
+        
+        {# Lien vers la page suivante #}
+        <li class="page-item {{ pagination.current_page == pagination.total_pages ? 'disabled' : '' }}">
+            <a class="page-link" href="{{ path(pagination.route, pagination.route_params|merge({'page': pagination.current_page + 1})) }}" aria-label="Page suivante">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+        
+        {# Lien vers la dernière page #}
+        <li class="page-item {{ pagination.current_page == pagination.total_pages ? 'disabled' : '' }}">
+            <a class="page-link" href="{{ path(pagination.route, pagination.route_params|merge({'page': pagination.total_pages})) }}" aria-label="Dernière page">
+                <span aria-hidden="true">&raquo;&raquo;</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+
+{# Informations sur la pagination #}
+<div class="text-center text-muted">
+    <small>
+        Affichage {{ (pagination.current_page - 1) * 20 + 1 }} 
+        à {{ min(pagination.current_page * 20, pagination.total_items) }} 
+        sur {{ pagination.total_items }} mangas
+    </small>
+</div>
+{% endif %}

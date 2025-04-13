@@ -1,0 +1,104 @@
+{# templates/_select2_includes.html.twig #}
+
+{# CSS pour Select2 #}
+{% block select2_css %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+    /* Styles pour Select2 */
+    .select2-container--default .select2-selection--multiple {
+        border-radius: 0.375rem;
+        border-color: #ced4da;
+        min-height: 38px;
+    }
+    
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+        background-color: #0d6efd;
+        color: white;
+        border: none;
+        border-radius: 16px;
+        padding: 2px 10px;
+        margin-top: 4px;
+    }
+    
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+        color: rgba(255, 255, 255, 0.7);
+        margin-right: 5px;
+        border-right: none;
+    }
+    
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+        color: white;
+        background-color: transparent;
+    }
+    
+    /* Styles de secours au cas où Select2 ne s'initialise pas */
+    .select-tags {
+        min-height: 100px;
+        padding: 0.375rem 0.75rem;
+    }
+    
+    /* S'assurer que le select est bien visible et utilisable même sans Select2 */
+    .select-tags option {
+        padding: 4px;
+    }
+</style>
+{% endblock %}
+
+{# JavaScript pour Select2 #}
+{% block select2_js %}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    // Fonction d'initialisation de Select2
+    function initSelect2() {
+        if (typeof $ !== 'undefined' && typeof $.fn.select2 !== 'undefined') {
+            // Vérifier si les éléments existent avant d'appliquer Select2
+            if ($('.select-tags').length > 0) {
+                // Détruire les instances existantes pour éviter les doublons
+                try {
+                    $('.select-tags').select2('destroy');
+                } catch (e) {
+                    // Ignore errors if Select2 wasn't initialized yet
+                }
+                
+                // Réinitialiser Select2
+                $('.select-tags').select2({
+                    placeholder: 'Sélectionnez un ou plusieurs tags',
+                    allowClear: true,
+                    closeOnSelect: false,
+                    width: '100%',
+                    language: {
+                        noResults: function() {
+                            return "Aucun tag ne correspond à votre recherche";
+                        }
+                    }
+                });
+                
+                console.log('Select2 a été initialisé avec succès');
+            } else {
+                console.log('Aucun élément avec la classe select-tags trouvé');
+            }
+        } else {
+            console.error('jQuery ou Select2 n\'est pas chargé correctement');
+        }
+    }
+
+    // Initialiser au chargement du DOM
+    document.addEventListener('DOMContentLoaded', function() {
+        initSelect2();
+    });
+    
+    // Réinitialiser après le chargement complet de la page
+    window.addEventListener('load', function() {
+        initSelect2();
+    });
+    
+    // Fallback pour s'assurer que Select2 est initialisé après un certain délai
+    setTimeout(function() {
+        initSelect2();
+    }, 500);
+    
+    // Exposer la fonction pour permettre une réinitialisation manuelle
+    window.initSelect2 = initSelect2;
+</script>
+{% endblock %}

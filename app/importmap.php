@@ -16,8 +16,8 @@ return [
         'path' => './assets/app.js',
         'entrypoint' => true,
     ],
-    'tags-selector' => [
-        'path' => './assets/js/tags-selector.js',
+    'select2-init' => [
+        'path' => './assets/js/select2-init.js',
         'entrypoint' => true,
     ],
     '@hotwired/stimulus' => [
